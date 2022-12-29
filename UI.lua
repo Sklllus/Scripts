@@ -11,7 +11,7 @@ local Stats = game:GetService("Stats")
 local TweenService = game:GetService("TweenService")
 
 if getgenv()["library"] then
-    getgenv()["library"]:Unlad()
+    getgenv()["library"]:Unload()
 end
 
 local library = {
@@ -24,6 +24,7 @@ local library = {
     Theme = {},
     Draggable = true,
     Open = false,
+    Watermark = nil,
     Popup = nil,
     TabSize = 0,
     Name = "Break-Skill Hub - V1",
@@ -39,20 +40,23 @@ getgenv()["library"] = library
 --]
 
 --[
---CreateWindow
+--CreateWatermark
 --]
 
-function library:CreateWindow(options)
-    local WindowName = (options.Name or options.Title or options.Text) or "New Window"
-    local WatermarkName = (options.WName or options.WTitle or options.WText) or "New Watermark {game} | {fps} | {ping}"
+function library:CreateWatermark(options)
+    local WatermarkName = (options.Name or options.Title or options.Text) or "Watermark | {game} | {fps}"
 
-    local WName = " " .. WatermarkName:gsub("{game}", MarketplaceService:GetProductInfo(game.PlaceId).Name):gsub("{fps}", "0 FPS"):gsub("{ping}", "0 ping") .. " "
+    local WatermarkTitle = " " .. WatermarkName:gsub("{game}", MarketplaceService:GetProductInfo(game.PlaceId).Name):gsub("{fps}", "0 FPS") .. " "
 
     local Watermark = Instance.new("ScreenGui")
 
     Watermark.Name = "Watermark"
     Watermark.IgnoreGuiInset = true
     Watermark.ZIndexBehavior = Enum.ZIndexBehavior.Global
+
+    if RunService:IsStudio() then
+        Watermark.Parent = script.Parent.Parent
+    end
 
     if gethui then
         Watermark.Parent = gethui()
@@ -64,25 +68,17 @@ function library:CreateWindow(options)
         Watermark.Parent = CoreGui
     end
 
-    if getgenv()["Watermark"] then
-        getgenv()["Watermark"]:Destroy()
-    end
-
-    getgenv()["Watermark"] = Watermark
+    library.Watermark = Watermark
 
     local MainBar = Instance.new("Frame", Watermark)
-    local Gradient = Instance.new("UIGradient", MainBar)
-    local Outline = Instance.new("Frame", MainBar)
-    local BlackOutline = Instance.new("Frame", MainBar)
-    local WTitle = Instance.new("TextLabel", MainBar)
-    local TopBar = Instance.new("Frame", MainBar)
 
     MainBar.Name = "MainBar"
-    MainBar.BorderColor3 = Color3.fromRGB(80, 80, 80)
     MainBar.BorderSizePixel = 0
     MainBar.ZIndex = 5
     MainBar.Position = UDim2.new(0, 10, 0, 10)
     MainBar.Size = UDim2.new(0, 0, 0, 25)
+
+    local Gradient = Instance.new("UIGradient", MainBar)
 
     Gradient.Name = "Gradient"
     Gradient.Rotation = 90
@@ -91,11 +87,15 @@ function library:CreateWindow(options)
         ColorSequenceKeypoint.new(1.00, Color3.fromRGB(10, 10, 10))
     })
 
+    local Outline = Instance.new("Frame", MainBar)
+
     Outline.Name = "Outline"
     Outline.ZIndex = 4
     Outline.BorderSizePixel = 0
     Outline.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     Outline.Position = UDim2.fromOffset(-1, -1)
+
+    local BlackOutline = Instance.new("Frame", MainBar)
 
     BlackOutline.Name = "BlackOutline"
     BlackOutline.ZIndex = 3
@@ -103,18 +103,22 @@ function library:CreateWindow(options)
     BlackOutline.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     BlackOutline.Position = UDim2.fromOffset(-2, -2)
 
+    local WTitle = Instance.new("TextLabel", MainBar)
+
     WTitle.Name = "WTitle"
     WTitle.BackgroundTransparency = 1
     WTitle.Position = UDim2.new(0, 0, 0, 0)
     WTitle.Size = UDim2.new(0, 238, 0, 25)
     WTitle.Font = Enum.Font.Code
     WTitle.ZIndex = 6
-    WTitle.Text = WName
+    WTitle.Text = WatermarkTitle
     WTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
     WTitle.TextSize = 15
     WTitle.TextStrokeTransparency = 0
     WTitle.TextXAlignment = Enum.TextXAlignment.Left
     WTitle.Size = UDim2.new(0, WTitle.TextBounds.X + 10, 0, 25)
+
+    local TopBar = Instance.new("Frame", MainBar)
 
     TopBar.Name = "TopBar"
     TopBar.ZIndex = 6
@@ -122,24 +126,35 @@ function library:CreateWindow(options)
     TopBar.BorderSizePixel = 0
     TopBar.Size = UDim2.new(0, 0, 0, 1)
 
-    MainBar.Size = UDim2.new(0, WTitle.TextBounds.X, 0, 25)
-    TopBar.Size = UDim2.new(0, WTitle.TextBounds.X + 6, 0, 1)
-    Outline.Size = MainBar.Size + UDim2.fromOffset(2, 2)
-    BlackOutline.Size = MainBar.Size + UDim2.fromOffset(4, 4)
-    MainBar.Size = UDim2.new(0, WTitle.TextBounds.X + 4, 0, 25)
-    WTitle.Size = UDim2.new(0, WTitle.TextBounds.X + 4, 0, 25)
-    TopBar.Size = UDim2.new(0, WTitle.TextBounds.X + 6, 0, 1)
-    Outline.Size = MainBar.Size + UDim2.fromOffset(2, 2)
-    BlackOutline.Size = MainBar.Size + UDim2.fromOffset(4, 4)
+    TweenService:Create(MainBar, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, WTitle.TextBounds.X, 0, 25)}):Play()
+    TweenService:Create(TopBar, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, WTitle.TextBounds.X + 6, 0, 1)}):Play()
+
+    repeat
+        task.wait()
+    until MainBar.Size == UDim2.new(0, WTitle.TextBounds.X, 0, 25)
+
+    TweenService:Create(Outline, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = MainBar.Size + UDim2.fromOffset(2, 2)}):Play()
+    TweenService:Create(BlackOutline, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = MainBar.Size + UDim2.fromOffset(4, 4)}):Play()
+
+    TweenService:Create(MainBar, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, WTitle.TextBounds.X + 4, 0, 25)}):Play()
+    TweenService:Create(WTitle, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, WTitle.TextBounds.X + 4, 0, 25)}):Play()
+    TweenService:Create(TopBar, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, WTitle.TextBounds.X + 6, 0, 1)}):Play()
+
+    repeat
+        task.wait()
+    until MainBar.Size == UDim2.new(0, WTitle.TextBounds.X + 4, 0, 25)
+
+    TweenService:Create(Outline, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = MainBar.Size + UDim2.fromOffset(2, 2)}):Play()
+    TweenService:Create(BlackOutline, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = MainBar.Size + UDim2.fromOffset(4, 4)}):Play()
 
     local StartTime, Counter, OldFPS = os.clock(), 0, nil
 
     RunService.Heartbeat:Connect(function()
-        if not WatermarkName:find("{fps}") or not WatermarkName:find("{ping}") then
-            WTitle.Text = " " .. WatermarkName:gsub("{game}", MarketplaceService:GetProductInfo(game.PlaceId).Name):gsub("{fps}", "0 FPS"):gsub("{ping}", "0 ping") .. " "
+        if not WatermarkName:find("{fps}") then
+            WTitle.Text = " " .. WatermarkName:gsub("{game}", MarketplaceService:GetProductInfo(game.PlaceId).Name):gsub("{fps}", "0 FPS") .. " "
         end
 
-        if WatermarkName:find("{fps}") or WatermarkName:find("{ping}") then
+        if WatermarkName:find("{fps}") then
             local CurrentTime = os.clock()
 
             Counter = Counter + 1
@@ -152,12 +167,18 @@ function library:CreateWindow(options)
                 StartTime = CurrentTime
 
                 if FPS ~= OldFPS then
-                    WTitle.Text = " " .. WatermarkName:gsub("{game}", MarketplaceService:GetProductInfo(game.PlaceId).Name):gsub("{fps}", FPS .. " FPS"):gsub("{ping}", Stats.Network.ServerStatsItem["Data Ping"]:GetValue(), " ping") .. " "
-                    WTitle.Size = UDim2.new(0, WTitle.TextBounds.X + 10, 0, 25)
-                    MainBar.Size = UDim2.new(0, WTitle.TextBounds.X, 0, 25)
-                    TopBar.Size = UDim2.new(0, WTitle.TextBounds.X, 0, 1)
-                    Outline.Size = MainBar.Size + UDim2.fromOffset(2, 2)
-                    BlackOutline.Size = MainBar.Size + UDim2.fromOffset(4, 4)
+                    WTitle.Text = " " .. WatermarkName:gsub("{game}", MarketplaceService:GetProductInfo(game.PlaceId).Name):gsub("{fps}", FPS .. " FPS") .. " "
+
+                    TweenService:Create(WTitle, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, WTitle.TextBounds.X + 10, 0, 25)}):Play()
+                    TweenService:Create(MainBar, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, WTitle.TextBounds.X, 0, 25)}):Play()
+                    TweenService:Create(TopBar, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, WTitle.TextBounds.X, 0, 1)}):Play()
+
+                    repeat
+                        task.wait()
+                    until MainBar.Size == UDim2.new(0, WTitle.TextBounds.X + 10, 0, 25)
+
+                    TweenService:Create(Outline, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = MainBar.Size + UDim2.fromOffset(2, 2)}):Play()
+                    TweenService:Create(BlackOutline, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = MainBar.Size + UDim2.fromOffset(4, 4)}):Play()
                 end
 
                 OldFPS = FPS
@@ -166,23 +187,32 @@ function library:CreateWindow(options)
     end)
 
     MainBar.MouseEnter:Connect(function()
-        TweenService:Create(MainBar, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1, Active = false}):Play()
-        TweenService:Create(TopBar, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1, Active = false}):Play()
-        TweenService:Create(WTitle, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1, Active = false}):Play()
-        TweenService:Create(Outline, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1, Active = false}):Play()
-        TweenService:Create(BlackOutline, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1, Active = false}):Play()
+        TweenService:Create(MainBar, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1, Active = false}):Play()
+        TweenService:Create(TopBar, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1, Active = false}):Play()
+        TweenService:Create(WTitle, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextTransparency = 1, Active = false}):Play()
+        TweenService:Create(Outline, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1, Active = false}):Play()
+        TweenService:Create(BlackOutline, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1, Active = false}):Play()
     end)
 
     MainBar.MouseLeave:Connect(function()
-        TweenService:Create(MainBar, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 0, Active = true}):Play()
-        TweenService:Create(TopBar, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 0, Active = true}):Play()
-        TweenService:Create(WTitle, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 0, Active = true}):Play()
-        TweenService:Create(Outline, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 0, Active = true}):Play()
-        TweenService:Create(BlackOutline, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 0, Active = true}):Play()
+        TweenService:Create(MainBar, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 0, Active = true}):Play()
+        TweenService:Create(TopBar, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 0, Active = true}):Play()
+        TweenService:Create(WTitle, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextTransparency = 0, Active = true}):Play()
+        TweenService:Create(Outline, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 0, Active = true}):Play()
+        TweenService:Create(BlackOutline, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 0, Active = true}):Play()
     end)
 
+    local WatermarkFunctions = {}
 
+    --[
+    --Destroy
+    --]
+
+    function WatermarkFunctions:Destroy()
+        Watermark:Destroy()
+    end
+
+    return WatermarkFunctions
 end
-
 
 return library
