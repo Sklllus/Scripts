@@ -170,7 +170,7 @@ library.createLabel = function(option, parent)
         BackgroundTransparency = 1,
         TextSize = 15,
         Font = Enum.Font.Code,
-        TextColor3 = Color3.new(1, 1, 1),
+        TextColor3 = option.color,
         TextXAlignment = Enum.TextXAlignment.Left,
         TextYAlignment = Enum.TextYAlignment.Top,
         TextWrapped = true,
@@ -1748,8 +1748,8 @@ function library:AddTab(title, pos)
             local section = {title = tostring(title), options = {}, canInit = true, column = self}
             table.insert(self.sections, section)
 
-            function section:AddLabel(text)
-                local option = {text = text}
+            function section:AddLabel(text, color)
+                local option = {text = text, color = color}
                 option.section = self
                 option.type = "label"
                 option.position = #self.options
