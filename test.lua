@@ -1,14 +1,15 @@
+--[
+--UI Library Made By xS_Killus
+--]
+
+--Instances And Functions
+
 local CoreGui = game:GetService("CoreGui")
 local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
---[
---UI Library Made By xS_Killus
---]
-
---Instances And Functions
 
 if getgenv()["library"] then
     getgenv()["library"]:Unload()
@@ -376,4 +377,8 @@ function library:CreateWindow(options)
     SettingsButton.Position = UDim2.new(0.813, 0, 0.125, 0)
     SettingsButton.Size = UDim2.new(0, 30, 0, 30)
     SettingsButton.Image = "rbxassetid://6031280882"
+
+    DestroyWindowButton.MouseButton1Click:Connect(function()
+        library:Unload()
+    end)
 end
