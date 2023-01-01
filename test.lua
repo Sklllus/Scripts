@@ -332,6 +332,16 @@ function library:CreateWindow(options)
     TopFrame.TextSize = 20
     TopFrame.TextXAlignment = Enum.TextXAlignment.Left
 
+    WindowTitle.Name = "WindowTitle"
+    WindowTitle.BackgroundTransparency = 1
+    WindowTitle.BorderSizePixel = 0
+    WindowTitle.Size = UDim2.new(0, 210, 0, 20)
+    WindowTitle.Font = Enum.Font.Code
+    WindowTitle.Text = WindowName
+    WindowTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    WindowTitle.TextSize = 20
+    WindowTitle.TextXAlignment = Enum.TextXAlignment.Left
+
     WindowTitlePadding.Name = "WindowTitlePadding"
     WindowTitlePadding.PaddingLeft = UDim.new(0, 4)
 
