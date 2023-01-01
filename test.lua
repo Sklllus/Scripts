@@ -379,15 +379,12 @@ function library:CreateWindow(options)
     SettingsButton.Image = "rbxassetid://6031280882"
 
     DestroyWindowButton.MouseButton1Click:Connect(function()
-        TweenService:Create(DestroyWindowButton, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
-        TweenService:Create(MinimizeButton, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
-        TweenService:Create(InternalUIButton, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
-        TweenService:Create(SettingsButton, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
-        TweenService:Create(WindowTitle, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextTransparency = 1}):Play()
-        TweenService:Create(GameName, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextTransparency = 1}):Play()
-
-        task.wait(1)
-
+        TweenService:Create(DestroyWindowButton, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
+        TweenService:Create(MinimizeButton, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
+        TweenService:Create(InternalUIButton, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
+        TweenService:Create(SettingsButton, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
+        TweenService:Create(WindowTitle, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextTransparency = 1}):Play()
+        TweenService:Create(GameName, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextTransparency = 1}):Play()
         TweenService:Create(TopFrame, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
         TweenService:Create(LeftFrame, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
 
