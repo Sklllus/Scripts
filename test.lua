@@ -390,13 +390,16 @@ function library:CreateWindow(options)
 
         TweenService:Create(TopFrame, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
         TweenService:Create(LeftFrame, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
+
+        task.wait(0.5)
+
         TweenService:Create(MainFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 640, 0, 5)}):Play()
 
         repeat
             task.wait()
         until MainFrame.Size == UDim2.new(0, 640, 0, 5)
 
-        TweenService:Create(MainFrame, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 2, 0, 2), BackgroundTransparency = 1}):Play()
+        TweenService:Create(MainFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 2, 0, 2), BackgroundTransparency = 1}):Play()
 
         task.wait(0.5)
 
