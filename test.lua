@@ -81,7 +81,7 @@ local function MakeDraggable(topBarObject, object)
             local Delta = input.Position - DragStart
 
             if not IsDraggingSomething then
-                TweenService:Create(object, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)}):Play()
+                TweenService:Create(object, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)}):Play()
             end
         end
     end)
@@ -379,6 +379,27 @@ function library:CreateWindow(options)
     SettingsButton.Image = "rbxassetid://6031280882"
 
     DestroyWindowButton.MouseButton1Click:Connect(function()
+        TweenService:Create(DestroyWindowButton, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
+        TweenService:Create(MinimizeButton, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
+        TweenService:Create(InternalUIButton, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
+        TweenService:Create(SettingsButton, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
+        TweenService:Create(WindowTitle, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextTransparency = 1}):Play()
+        TweenService:Create(GameName, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {TextTransparency = 1}):Play()
+
+        task.wait(1)
+
+        TweenService:Create(TopFrame, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(LeftFrame, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(MainFrame, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 640, 0, 5)}):Play()
+
+        repeat
+            task.wait()
+        until MainFrame.Size == UDim2.new(0, 640, 0, 5)
+
+        TweenService:Create(MainFrame, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.In), {Size = UDim2.new(0, 2, 0, 2), BackgroundTransparency = 1}):Play()
+
+        task.wait(0.5)
+
         library:Unload()
     end)
 end
