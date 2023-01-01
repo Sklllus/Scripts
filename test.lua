@@ -322,16 +322,6 @@ function library:CreateWindow(options)
     TopFrameCorner.Name = "TopFrameCorner"
     TopFrameCorner.CornerRadius = UDim.new(0, 6)
 
-    TopFrame.Name = "WindowTitle"
-    TopFrame.BackgroundTransparency = 1
-    TopFrame.BorderSizePixel = 0
-    TopFrame.Size = UDim2.new(0, 210, 0, 20)
-    TopFrame.Font = Enum.Font.Code
-    TopFrame.Text = WindowName
-    TopFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TopFrame.TextSize = 20
-    TopFrame.TextXAlignment = Enum.TextXAlignment.Left
-
     WindowTitle.Name = "WindowTitle"
     WindowTitle.BackgroundTransparency = 1
     WindowTitle.BorderSizePixel = 0
