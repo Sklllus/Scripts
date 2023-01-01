@@ -117,8 +117,8 @@ function library:Unload()
         c:Disconnect()
     end
 
-    if library.Window then
-        library.Window:Destroy()
+    if CoreGui:FindFirstChild("Window") then
+        CoreGui.Window:Destroy()
     end
 
     for _, o in next, self.Options do
