@@ -91,53 +91,6 @@ end
 --]
 
 --[
---Create
---]
-
-function library:Create(class, props)
-    props = props or {}
-
-    if not class then
-        return
-    end
-
-    local A = class == "Square" or class == "Line" or class == "Text" or class == "Quad" or class == "Circle" or class == "Triangle"
-
-    local T = A and Drawing or Instance
-
-    local Inst = T.new(class)
-
-    if not A then
-        if class == "ScreenGui" then
-            if RunService:IsStudio() then
-                Inst.Parent = script.Parent.Parent
-            end
-
-            if gethui then
-                Inst.Parent = gethui()
-            end
-
-            if syn and syn.protect_gui then
-                syn.syn.protect_gui(Inst)
-
-                Inst.Parent = CoreGui
-            end
-        end
-    end
-
-    for p, v in next, props do
-        Inst[p] = v
-    end
-
-    table.insert(self.Instances, {
-        Object = Inst,
-        Method = A
-    })
-
-    return Inst
-end
-
---[
 --AddConnection
 --]
 
@@ -164,14 +117,8 @@ function library:Unload()
         c:Disconnect()
     end
 
-    for _, i in next, self.Instances do
-        if i.Method then
-            pcall(function()
-                i.Object:Remove()
-            end)
-        else
-            i.Object:Destroy()
-        end
+    if library.Window then
+        library.Window:Destroy()
     end
 
     for _, o in next, self.Options do
@@ -309,139 +256,124 @@ end
 function library:CreateWindow(options)
     local WindowName = (options.Name or options.Title or options.Text) or "New Window"
 
-    local Window = library:Create("ScreenGui", {
-        Name = "Window",
-        IgnoreGuiInset = true,
-        ZIndexBehavior = Enum.ZIndexBehavior.Global
-    })
+    local Window = Instance.new("ScreenGui")
 
-    local MainFrame = library:Create("Frame", {
-        Name = "MainFrame",
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = Color3.fromRGB(25, 25, 25),
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        Size = UDim2.new(0, 640, 0, 450),
-        Parent = Window
-    })
+    if RunService:IsStudio() then
+        Window.Parent = script.Parent.Parent
+    end
+
+    if gethui then
+        Window.Parent = gethui()
+    end
+
+    if syn and syn.protect_gui then
+        syn.protect_gui(Window)
+
+        Window.Parent = CoreGui
+    end
+
+    local MainFrame = Instance.new("Frame", Window)
+    local MainFrameCorner = Instance.new("UICorner", MainFrame)
+    local LeftFrame = Instance.new("Frame", MainFrame)
+    local LeftFrameCorner = Instance.new("UICorner", LeftFrame)
+    local LeftFrameList = Instance.new("UIListLayout", LeftFrame)
+    local TopFrame = Instance.new("Frame", MainFrame)
+    local TopFrameCorner = Instance.new("UICorner", TopFrame)
+    local WindowTitle = Instance.new("TextLabel", TopFrame)
+    local WindowTitlePadding = Instance.new("UIPadding", WindowTitle)
+    local GameName = Instance.new("TextLabel", TopFrame)
+    local GameNamePadding = Instance.new("UIPadding", GameName)
+    local DestroyWindowButton = Instance.new("ImageButton", TopFrame)
+    local MinimizeButton = Instance.new("ImageButton", TopFrame)
+    local InternalUIButton = Instance.new("ImageButton", TopFrame)
+    local SettingsButton = Instance.new("ImageButton", TopFrame)
+
+    Window.Name = "Window"
+    Window.IgnoreGuiInset = true
+    Window.ZIndexBehavior = Enum.ZIndexBehavior.Global
+
+    MainFrame.Name = "MainFrame"
+    MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    MainFrame.Size = UDim2.new(0, 640, 0, 450)
 
     MakeDraggable(MainFrame, MainFrame)
 
-    local MainFrameCorner = library:Create("UICorner", {
-        Name = "MainFrameCorner",
-        CornerRadius = UDim.new(0, 6),
-        Parent = MainFrame
-    })
+    MainFrameCorner.Name = "MainFrameCorner"
+    MainFrameCorner.CornerRadius = UDim.new(0, 6)
 
-    local LeftFrame = library:Create("Frame", {
-        Name = "LeftFrame",
-        BackgroundColor3 = Color3.fromRGB(40, 40, 40),
-        Position = UDim2.new(0, 0, 0.089, 0),
-        Size = UDim2.new(0, 155, 0, 410),
-        Parent = MainFrame
-    })
+    LeftFrame.Name = "LeftFrame"
+    LeftFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    LeftFrame.Position = UDim2.new(0, 0, 0.089, 0)
+    LeftFrame.Size = UDim2.new(0, 155, 0, 410)
 
-    local LeftFrameCorner = library:Create("UICorner", {
-        Name = "LeftFrameCorner",
-        CornerRadius = UDim.new(0, 6),
-        Parent = LeftFrame
-    })
+    LeftFrameCorner.Name = "LeftFrameCorner"
+    LeftFrameCorner.CornerRadius = UDim.new(0, 6)
 
-    local LeftFrameList = library:Create("UIListLayout", {
-        Name = "LeftFrameList",
-        Padding = UDim.new(0, 4),
-        HorizontalAlignment = Enum.HorizontalAlignment.Center,
-        Parent = LeftFrame
-    })
+    LeftFrameList.Name = "LeftFrameList"
+    LeftFrameList.Padding = UDim.new(0, 4)
+    LeftFrameList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-    local TopFrame = library:Create("Frame", {
-        Name = "TopFrame",
-        BackgroundColor3 = Color3.fromRGB(40, 40, 40),
-        Size = UDim2.new(0, 640, 0, 40),
-        Parent = MainFrame
-    })
+    TopFrame.Name = "TopFrame"
+    TopFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    TopFrame.Size = UDim2.new(0, 640, 0, 40)
 
-    local TopFrameCorner = library:Create("UICorner", {
-        Name = "TopFrameCorner",
-        CornerRadius = UDim.new(0, 6),
-        Parent = TopFrame
-    })
+    TopFrameCorner.Name = "TopFrameCorner"
+    TopFrameCorner.CornerRadius = UDim.new(0, 6)
 
-    local WindowTitle = library:Create("TextLabel", {
-        Name = "WindowTitle",
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        Size = UDim2.new(0, 210, 0, 20),
-        Font = Enum.Font.Code,
-        Text = WindowName,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 20,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = TopFrame
-    })
+    TopFrame.Name = "WindowTitle"
+    TopFrame.BackgroundTransparency = 1
+    TopFrame.BorderSizePixel = 0
+    TopFrame.Size = UDim2.new(0, 210, 0, 20)
+    TopFrame.Font = Enum.Font.Code
+    TopFrame.Text = WindowName
+    TopFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TopFrame.TextSize = 20
+    TopFrame.TextXAlignment = Enum.TextXAlignment.Left
 
-    local WindowTitlePadding = library:Create("UIPadding", {
-        Name = "WindowTitlePadding",
-        PaddingLeft = UDim.new(0, 4),
-        Parent = WindowTitle
-    })
+    WindowTitlePadding.Name = "WindowTitlePadding"
+    WindowTitlePadding.PaddingLeft = UDim.new(0, 4)
 
-    local GameName = library:Create("GameName", {
-        Name = "GameName",
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0, 0, 0.5, 0),
-        Size = UDim2.new(0, 210, 0, 20),
-        Font = Enum.Font.Code,
-        Text = MarketplaceService:GetProductInfo(game.PlaceId).Name,
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 18,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = TopFrame
-    })
+    GameName.Name = "GameName"
+    GameName.BackgroundTransparency = 1
+    GameName.BorderSizePixel = 0
+    GameName.Position = UDim2.new(0, 0, 0.5, 0)
+    GameName.Size = UDim2.new(0, 210, 0, 20)
+    GameName.Font = Enum.Font.Code
+    GameName.Text = MarketplaceService:GetProductInfo(game.PlaceId).Name
+    GameName.TextColor3 = Color3.fromRGB(255, 255, 255)
+    GameName.TextSize = 18
+    GameName.TextXAlignment = Enum.TextXAlignment.Left
 
-    local GameNamePadding = library:Create("UIPadding", {
-        Name = "GameNamePadding",
-        PaddingLeft = UDim.new(0, 4),
-        Parent = GameName
-    })
+    GameNamePadding.Name = "GameNamePadding"
+    GameNamePadding.PaddingLeft = UDim.new(0, 4)
 
-    local DestroyWindowButton = library:Create("ImageButton", {
-        Name = "DestroyWindowButton",
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.953, 0, 0.125, 0),
-        Size = UDim2.new(0, 30, 0, 30),
-        Image = "rbxassetid://6031094678",
-        Parent = TopFrame
-    })
+    DestroyWindowButton.Name = "DestroyWindowButton"
+    DestroyWindowButton.BackgroundTransparency = 1
+    DestroyWindowButton.BorderSizePixel = 0
+    DestroyWindowButton.Position = UDim2.new(0.953, 0, 0.125, 0)
+    DestroyWindowButton.Size = UDim2.new(0, 30, 0, 30)
+    DestroyWindowButton.Image = "rbxassetid://6031094678"
 
-    local MinimizeButton = library:Create("ImageButton", {
-        Name = "MinimizeButton",
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.906, 0, 0.125, 0),
-        Size = UDim2.new(0, 30, 0, 30),
-        Image = "rbxassetid://6035067836",
-        Parent = TopFrame
-    })
+    MinimizeButton.Name = "MinimizeButton"
+    MinimizeButton.BackgroundTransparency = 1
+    MinimizeButton.BorderSizePixel = 0
+    MinimizeButton.Position = UDim2.new(0.906, 0, 0.125, 0)
+    MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+    MinimizeButton.Image = "rbxassetid://6035067836"
 
-    local InternalUIButton = library:Create("ImageButton", {
-        Name = "InternalUIButton",
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.859, 0, 0.125, 0),
-        Size = UDim2.new(0, 30, 0, 30),
-        Image = "rbxassetid://6023426930",
-        Parent = TopFrame
-    })
+    InternalUIButton.Name = "InternalUIButton"
+    InternalUIButton.BackgroundTransparency = 1
+    InternalUIButton.BorderSizePixel = 0
+    InternalUIButton.Position = UDim2.new(0.859, 0, 0.125, 0)
+    InternalUIButton.Size = UDim2.new(0, 30, 0, 30)
+    InternalUIButton.Image = "rbxassetid://6023426930"
 
-    local SettingsButton = library:Create("ImageButton", {
-        Name = "SettingsButton",
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0.813, 0, 0.125, 0),
-        Size = UDim2.new(0, 30, 0, 30),
-        Image = "rbxassetid://6031280882",
-        Parent = TopFrame
-    })
+    SettingsButton.Name = "SettingsButton"
+    SettingsButton.BackgroundTransparency = 1
+    SettingsButton.BorderSizePixel = 0
+    SettingsButton.Position = UDim2.new(0.813, 0, 0.125, 0)
+    SettingsButton.Size = UDim2.new(0, 30, 0, 30)
+    SettingsButton.Image = "rbxassetid://6031280882"
 end
